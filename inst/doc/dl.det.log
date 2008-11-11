@@ -1,0 +1,26 @@
+****************************************************
+Iteration 1: No. Permutations=0
+	Chr1	Chr2	Chr3	Chr4	Chr5	Chr6	Chr7	Chr8	Chr9
+Obs:	108.1238	41.581	37.8115	28.0897	28.4618	0.1467	-2e-04	-1e-04	-2e-04
+P-val:	0	0	0	0	0	1	1	1	1
+5% Genomewide Threshold: 6.4475
+Significant chromosomes to be used for scanning/testing:
+	Chr1	Chr2	Chr3	Chr4	Chr5
+Mrk:	8	8	6	4	1
+***************************************************************
+Iteration 2: No. Permutations=0
+Chromosomes from previous iteration: 
+	Chr1	Chr2	Chr3	Chr4	Chr5
+Obs:	20.5225	36.2927	-1e-04	-1e-04	-1e-04
+P-val:	0	0	1	1	1
+5% Genomewide Threshold: 5.4119
+Significant chromosomes for next round of testing/scanning:
+	Chr1	Chr2
+Mrk:	4	4
+***************************************************************
+Iteration 3: No. Permutations=0
+Chromosomes from previous iteration: 
+	Chr1	Chr2
+Obs:	-1e-04	-1e-04
+P-val:	1	1
+5% Genomewide Threshold: 3.8415
