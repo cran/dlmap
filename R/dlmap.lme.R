@@ -1,11 +1,12 @@
 `dlmap.lme` <-
-function(genfile="dlgenin.dat", phefile="dlphein.dat", mapfile="dlmapin.dat", phename, fixed=NULL, step=0, fixpos=0, seed=1, maxit=60, alpha=.05, filestem="dl")
+function(object, phename, fixed=NULL, seed=1, maxit=60, alpha=.05, filestem="dl")
 {
   if (!require(nlme)) 
 	stop("nlme package must be installed to use this function. Please install it from CRAN before proceeding")
 
   fixed.forma <- NULL
   set.seed(seed)
+  type <- attr(object, "type")
 
   if (length(phename)!=1)
   	stop("Can only model one phenotypic trait")
@@ -25,141 +26,130 @@ function(genfile="dlgenin.dat", phefile="dlphein.dat", mapfile="dlmapin.dat", ph
   if ((length(fixed)==2)&(as.character(fixed)[1]=="~"))
 	fixed.forma <- as.formula(paste(phename, as.character(fixed)[1], as.character(fixed)[2], sep=""))
 
-  data.in <- dlmap.read(genfile, phefile, mapfile, phename, filestem)
+  idname <- object$idname
 
-  genCross <- data.in$rqtlCross
-  envData <- data.in$envData
-  idname <- data.in$idname
+  object$envModel <- list()
+  object$envModel$fixed <- fixed.forma
+  object$dfMerged$grp1 <- 1
+  nphe <- object$nphe
 
-  input <- dlmap.merge(genCross=genCross, step=step, fixpos=fixpos, nperm=0, alpha=alpha, phename=phename, idname=idname)
-
-  input$envModel <- list()
-  input$envModel$fixed <- fixed.forma
-  input$dfMerged$grp1 <- 1
-  start.i <- input$start.i
+  object$alpha <- alpha
 
   #####
   # Recentering
   #####
-  n.mrk <- input$n.mrk
-  n.pos <- input$n.pos
-  dfMdim <- start.i+sum(n.pos)+sum(n.mrk)
+  dfMdim <- ncol(object$dfMerged)-1
+  n.mrk <- unlist(lapply(object$map, length))
 
   if (length(which(n.mrk==1))>0)
 	message("Warning: Linkage groups ", which(n.mrk==1), " contain only one marker")
 
-   input$dfMerged[, (start.i+1):dfMdim] <- t(t(input$dfMerged[,(start.i+1):dfMdim]) - apply(input$dfMerged[,(start.i+1):dfMdim], 2, function(x) return(mean(x,na.rm=TRUE))))
+   object$dfMerged[, (nphe+1):dfMdim] <- t(t(object$dfMerged[,(nphe+1):dfMdim]) - apply(object$dfMerged[,(nphe+1):dfMdim], 2, function(x) return(mean(x,na.rm=TRUE))))
 
   message("Beginning detection stage...")
-  det.out <- dlmap.detect.lme(input, filestem)
+  det.out <- detect.lme(object, filestem)
 
   # List of no. detected QTL from output of detection step
-  detqtl <- vector(length=input$n.chr)
+  detqtl <- vector(length=length(object$map))
 
-  for (i in 1:input$n.chr)
-  {
-	detqtl[i] <- 0
-	if (length(det.out$qtls[[paste("nq_", i, "chr", sep="")]]) > 0)
-	detqtl[i] <- det.out$qtls[[paste("nq_",i,"chr", sep="")]]
-  }
+  for (i in 1:length(object$map))
+    detqtl[i] <- length(grep(paste("C", i, "M", sep=""), det.out$qtls$pos))
+
+  if (type=="f2") detqtl <- detqtl/2
+  
   message("Detection stage complete. ", sum(detqtl), " total QTL detected")
-  loc.out <- NULL
-  if (((step>0)|(fixpos>0))&(sum(detqtl)>0))
+  loc.out <- det.out
+  if ((object$loc)&(sum(detqtl)>0))
   {
     message("Beginning localization stage...")
-    loc.out <- dlmap.localize.lme(input, QTLperChr=detqtl)
+    loc.out <- localize.lme(object, QTLperChr=detqtl)
   }
   message("Fitting final model with all QTL")
-  cumpos <- c(0, cumsum(n.pos))
-  cummrk <- c(0, cumsum(n.mrk))
-  final <- list()
 
-  f.pos <- vector()
-  c.pos <- vector()
+  final.fixed <- fixed.forma
+  if (sum(detqtl)>0) final.fixed <- paste(as.character(fixed.forma)[2], "~", as.character(fixed.forma)[3], "+", paste(loc.out$qtls$pos, collapse="+"), sep="")
 
-  if (!is.null(loc.out))
-  for (ii in 1:input$n.chr)
-  if (length(loc.out$qtls[[paste("pos_", ii, "chr", sep="")]])!=0)
-  {
-        f.pos <- c(f.pos, start.i+cumpos[ii]+loc.out$qtls[[paste("pos_", ii, "chr", sep="")]])
-	c.pos <- c(c.pos, input$chrPos[[paste("chr", ii, sep="")]][loc.out$qtls[[paste("pos_", ii, "chr",sep="")]]])
-  }
-  
-  if (is.null(loc.out))
-  for (ii in 1:input$n.chr)
-  if (length(det.out$qtls[[paste("m_", ii, "chr", sep="")]])!=0)
-  {
-        f.pos <- c(f.pos, start.i+cummrk[ii]+sum(n.pos)+det.out$qtls[[paste("m_", ii, "chr", sep="")]])
-	c.pos <- c(c.pos, find.markerpos(input$genCross, input$mrk.names[det.out$qtls[[paste("m_", ii, "chr",sep="")]]+cummrk[ii]])[,2])
-  }
-  
-  final$fixed <- fixed.forma
-  if (length(f.pos)>0)
-	final$fixed <- paste(as.character(fixed.forma)[2], "~", as.character(fixed.forma)[3], "+", paste(names(input$dfMerged)[f.pos], collapse="+"), sep="")
+  final.fixed <- as.formula(final.fixed)
+  mod.fin <- lm(final.fixed, data=object$dfMerged, na.action=na.omit)
 
-  final$fixed <- as.formula(final$fixed)
-  mod.new <- lm(final$fixed, data=input$dfMerged, na.action=na.omit)
-
-  if (length(f.pos)>0)
-  {
-    finalest.new <- vector(length=length(f.pos))
-    finalsd.new <- vector(length=length(f.pos))
-    for (jj in 1:length(f.pos))
-    {
-	finalest.new[jj] <- mod.new$coefficients[which(names(mod.new$coefficients)==names(input$dfMerged)[f.pos[jj]])]
-	finalsd.new[jj] <- summary(mod.new)$coefficients[which(rownames(summary(mod.new)$coefficients)==names(input$dfMerged)[f.pos[jj]]), 2]
-    }
-  }
-
-   output <- list()
-
-   output$no.qtl <- sum(detqtl)
-   output$final.model <- mod.new
+  output <- list()
+  output$input <- object
+  output$no.qtl <- detqtl
+  output$final.model <- mod.fin
+  output$final.model$call$fixed <- c(summary(mod.fin)$terms[[1]], summary(mod.fin)$terms[[2]], summary(mod.fin)$terms[[3]])
  
-   output$cross <- input$genCross
-   output$trait <- phename
+  if (sum(detqtl)>0)
+  {
+    table <- list()
 
-   if (length(f.pos)>0)
-   {
-     fmrk <- list()
-     fmrk$left <- vector()
-     fmrk$right <- vector()
-   
-     size <- finalest.new
-     chr <- rep(input$chr.names, detqtl)
-     pos <- c.pos
+    table[[1]] <- rep(names(object$map), detqtl)
+    if (type=="f2") table[[1]] <- rep(table[[1]], each=2)
 
-     zvalue <- finalest.new/finalsd.new
-     pvalue <- sapply(zvalue, function(x) 2*(1-pnorm(abs(x))))
+    mappos <- unlist(object$mapp)
+     if (type=="f2")
+        names(mappos) <- names(object$dfMerged)[(nphe+1):dfMdim][seq(1, dfMdim-nphe, 2)] else
+     names(mappos) <- names(object$dfMerged)[(nphe+1):dfMdim]
+     tmpord <- match(loc.out$qtls$pos, names(mappos))
 
-     # Wald profile for each chromosome containing QTL
-     output$profile <- loc.out$profile
-     r.chr <- which(detqtl>0)
+    loc.out$qtls$pos <- loc.out$qtls$pos[order(tmpord)]
 
-     if (!is.null(loc.out))
-     for (i in 1:length(r.chr))
-     { 
-       # Flanking markers for each positioned QTL
-       fmrk$left <- c(fmrk$left, input$mrk.names[loc.out$qtls[[paste("fmrkL_", r.chr[i], "chr", sep="")]]+cummrk[r.chr[i]]])
-       fmrk$right <- c(fmrk$right, input$mrk.names[loc.out$qtls[[paste("fmrkR_", r.chr[i], "chr", sep="")]]+cummrk[r.chr[i]]])
-     } 
+    if (type=="f2") pos <- unique(substr(loc.out$qtls$pos, 1, nchar(loc.out$qtls$pos)-1)) else 
+  	pos <- loc.out$qtls$pos
+    if (type=="f2") 	posD <- paste(pos, "D", sep="") else posD <- pos
 
-     if (is.null(loc.out)){
-     for (i in 1:length(r.chr))
-     {
-	fmrk$left <- c(fmrk$left, input$mrk.names[det.out$qtls[[paste("m_", r.chr[i], "chr", sep="")]]+cummrk[r.chr[i]]])
-	fmrk$right <- c(fmrk$right, input$mrk.names[det.out$qtls[[paste("m_", r.chr[i], "chr", sep="")]]+1+cummrk[r.chr[i]]])
+    nmmap <- unlist(lapply(object$mapp, names))
+    table[[2]] <- round(mappos[sort(tmpord)], 2)
+    if (type=="f2") table[[2]] <- rep(table[[2]], each=2)
+
+    table[[3]] <- table[[4]] <- NULL
+
+    table[[5]] <- round(mod.fin$coefficients[match(loc.out$qtls$pos, names(mod.fin$coefficients))], 4)
+    table[[6]] <- round(summary(mod.fin)$coefficients[match(loc.out$qtls$pos, rownames(summary(mod.fin)$coefficients)), 2], 4)
+
+    table[[7]] <- round(table[[5]]/table[[6]], 2)
+    table[[8]] <- round(sapply(table[[7]], function(x) 2*(1-pnorm(abs(x)))), 4)
+
+    # Wald profile for each chromosome containing QTL
+    output$profile <- loc.out$profile
+
+    if (type!="other")
+    {
+	mark <- grep("M", names(object$dfMerged)[(nphe+1):dfMdim])+nphe
+	if (type=="f2")
+	  mark <- mark[seq(1, length(mark), 2)]
+
+	endmrkL <- substr(pos, nchar(pos)-1, nchar(pos))=="M1"
+	endmrkR <- substr(names(mappos)[match(posD, names(mappos))+1], nchar(pos)-1, nchar(pos))=="M1"
+	endmrkR[posD==names(mappos)[length(mappos)]] <- TRUE
+
+	lm <- vector(length=length(posD))
+	rm <- vector(length=length(posD))
+	lm[!endmrkL] <- sapply(match(posD[!endmrkL], names(object$dfMerged)), function(x) return(max(mark[mark<x])))
+	rm[!endmrkR] <- sapply(match(posD[!endmrkR], names(object$dfMerged)), function(x) return(min(mark[mark>x])))
+	
+	lm[endmrkL] <- match(posD[endmrkL], names(object$dfMerged))
+	rm[endmrkR] <- match(posD[endmrkR], names(object$dfMerged))
+
+	table[[3]] <- nmmap[match(names(object$dfMerged)[lm], names(mappos))]
+	table[[4]] <- nmmap[match(names(object$dfMerged)[rm], names(mappos))]
+	
+	if (type=="f2")
+	{
+	  table[[3]] <- rep(table[[3]], each=2)
+	  table[[4]] <- rep(table[[4]], each=2)
+	}
      }
-     output$profile <- det.out$profile}
 
-     zTable <- as.data.frame(cbind(chr, round(pos,2), fmrk$left, fmrk$right, round(size, 2), round(zvalue, 2), round(pvalue,4)))
-     names(zTable) <- c("QTL Chr", "Pos", "Left Flank", "Right Flank", "Size", "Z", "p-value")
-     output$zTable <- zTable
+     names(table) <- c("Chr", "Pos", "Left Marker", "Right Marker", "Effect", "SD", "Z-value", "p-value")
+     output$Summary <- as.data.frame(do.call("cbind", table))
+     #rownames(output$Summary) <- names(table$SD)
+     rownames(output$Summary) <- NULL
 
    } # End of check for detected QTL
    
    if (sum(detqtl)==0)
  	print("No QTL detected in data. See log file for more details of testing.")
+   class(output) <- c("dlmap", class(object))
 
    return(output)
 }

@@ -6,23 +6,14 @@
 Fits the iterative algorithm for DLMapping. Reads in data, performs detection and localization stages and outputs summary of selected QTL effects. 
 }
 \usage{
-dlmap.asreml(genfile = "dlgenin.dat", phefile = "dlphein.dat", 
-mapfile = "dlmapin.dat", phename, baseModel, fixed = NULL, 
+dlmap.asreml(object, phename, baseModel, fixed = NULL, 
 random = NULL, rcov = NULL, sparse = NULL, pedigree, 
-step = 0, fixpos = 0, seed = 1, n.perm = 0, alpha = 0.05, 
-filestem = "dl", estmap=TRUE, ...)
+seed = 1, n.perm = 0, alpha = 0.05, filestem = "dl", ...)
 
-dlmap.lme(genfile="dlgenin.dat", phefile="dlphein.dat", mapfile="dlmapin.dat", 
-phename, fixed=NULL, step=0, fixpos=0, seed=1, maxit=60, alpha=.05, 
-filestem="dl")
+dlmap.lme(object, phename, fixed=NULL, seed=1, maxit=60, alpha=.05, filestem="dl")
 }
 \arguments{
-  \item{genfile}{ File with genotype data. Default filenames are output 
-from \code{\link{dlmap.convert.cross}}}
-  \item{phefile}{ File with phenotype data. Default filename is output 
-from \code{\link{dlmap.convert.cross}}}
-  \item{mapfile}{ File with marker position information. Default filename is 
-output from \code{\link{dlmap.convert.cross}}}
+  \item{object}{dlcross object created by create.dlcross}
   \item{phename}{ Response variable name}
   \item{fixed}{ A formula object specifying the fixed effects part of the 
 base model, with the terms, separated by + operators, on the right of 
@@ -30,23 +21,17 @@ a ~ operator. There is no left side to the ~ expression. If no fixed effect
 is specified, the model defaults to ~1, i.e. intercept only.} 
   \item{random}{ A formula object specifying the random effects part of the 
 base model, with the terms, separated by + operators, on the right of 
-a ~ operator. See \code{\link[asreml]{asreml}} for more detail. }
-  \item{rcov}{ A formula object specifying the error structure of the model, with the terms, separated by + operators, on the right of a ~ operator. See \code{\link[asreml]{asreml}} for more detail. }
+a ~ operator. See asreml documentation for more detail. }
+  \item{rcov}{ A formula object specifying the error structure of the model, with the terms, separated by + operators, on the right of a ~ operator. See asreml documentation for more detail. }
   \item{sparse}{ A formula object specifying the fixed effects to be 
 absorbed, with the terms, separated by + operators, on the right of 
-a ~ operator. See \code{\link[asreml]{asreml}} for more detail. }
+a ~ operator. See asreml documentation for more detail. }
   \item{baseModel}{ An alternative to specifying \code{fixed}, \code{random}, 
 \code{sparse}, and \code{rcov} separately. If a base model has already been 
 fit in asreml-R for the phenotypic variation, this can be input directly}
   \item{pedigree}{ A pedigree object consisting of three columns. The first 
 column is the individual ID, then the mother's ID and the father's ID. 
 The name of the ID variable in the first column must match the \code{idname} variable }
-  \item{step}{ Step size for localization stage, i.e. if \code{step=2}, grid 
-of positions spaced 2 cM apart are considered for QTL locations. If 
-\code{step=0} (default) positions are only located at markers.}
-  \item{fixpos}{ Alternative to specifying a step size - if \code{fixpos=2}, 
-2 evenly spaced positions between each marker are considered as QTL locations. 
-If \code{fixpos=0} (default) positions are only located at markers. }
   \item{seed}{ Random number seed. Default=1}
   \item{n.perm}{ Number of permutations used to get adjusted p-values at 
 each iteration of detection. If \code{n.perm=0} (default) the Bonferroni 
@@ -54,9 +39,8 @@ correction is used. }
   \item{alpha}{ Significance level for testing }
   \item{filestem}{ Stem to add to names of any files generated in DL Mapping 
 process. Default="dl"}
-  \item{estmap}{ Indicator whether to re-estimate the linkage map}
   \item{maxit}{ Maximum number of iterations to attempt for convergence of \code{lme}}
-  \item{...}{ additional arguments to \code{\link[asreml]{asreml}}}
+  \item{...}{ additional arguments to asreml}
 }
 \details{
 There are two versions of this function, which use different engines to 
@@ -115,9 +99,9 @@ See the accompanying vignette for an example of how to interpret the ".det.log" 
 
 }
 \value{
-  \item{zTable}{Table with one row per QTL detected, columns for which 
+  \item{Summary}{Table with one row per QTL detected, columns for which 
 chromosome the QTL is on, its position (cM), flanking markers, additive 
-effect, Z-ratio and p-value.}
+(dominant) effect and standard deviation, Z-ratio and p-value.}
   \item{no.qtl }{ Total number of QTL detected on all chromosomes}
   \item{final.model }{Object of class \code{asreml} for final model 
 containing all terms in the base model, as well as effects for every QTL 
@@ -126,24 +110,25 @@ detected at the appropriate locations. No random effects for markers are fit}
 with \emph{C} elements, each a matrix with 2 rows and a column for each 
 position on the chromosome. The first row contains the cM position; the second 
 row contains the Wald statistic for the model fit in the localization stage}
-  \item{cross}{rqtl cross object containing genotype data and linkage map}
-  \item{trait}{name of the response fitted in the model (\code{phename} input argument)}
+  \item{input}{Original dlcross input to the analysis}
 }
-\references{ Huang, BE and George, AW. Look before you leap: A new approach to QTL mapping. \emph{Manuscript in preparation}}
+\references{ Huang, BE and George, AW. 2009. Look before you leap: A new approach to QTL mapping. TAG 119:899-911}
 \author{ Emma Huang and Andrew George }
-\seealso{ \code{\link[dlmap]{dlmap.convert.cross}}, \code{\link[asreml]{asreml}} }
+\seealso{ \code{\link[dlmap]{dlcross}}, \code{\link[dlmap]{plot.dlmap}}, \code{\link[dlmap]{summary.dlmap}} }
 \examples{
 data(BSdat)
-data(BSphen)
+data(BSphe)
 
 \dontrun{
 # Convert cross object to DL Mapping format
-dlmap.convert.cross(format="rqtl", obj=BSdat)
+dl.in1 <- dlcross(format="rqtl", genobj=BSdat, idname="ID", fixpos=1)
 
 # Analyze data
-BSdl <- dlmap.asreml(phename="phenotype", estmap=FALSE, filestem="BS")
+BSdl <- dlmap.asreml(object=dl.in1, phename="phenotype", filestem="BS")
+BSdl <- dlmap.lme(object=dl.in1, phename="phenotype", filestem="BS")
 
 # With additional phenotypic data
-dlmap.convert.cross(format="rqtl", obj=BSdat, envobj=BSphen, idname="ID")
-BSph <- dlmap.asreml(phename="phenotype", env=TRUE, random=~Block, estmap=FALSE)}
+dl.in2 <- dlcross(format="rqtl", genobj=BSdat, pheobj=BSphe, idname="ID", step=5)
+BSph <- dlmap.asreml(object=dl.in2, phename="phenotype", env=TRUE, random=~Block)
+}
 }

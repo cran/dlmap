@@ -17,21 +17,17 @@ including spatial effects in field trials and random pedigree effects.
 \tabular{ll}{
 Package: \tab dlmap\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2008-11-11\cr
+Version: \tab 1.03\cr
+Date: \tab 2009-12-21\cr
 License: \tab GPL 2\cr
 }
 
-Data for the analysis must be input in three files in the following format:
-\itemize{
-\item \code{genfile}: First row contains an identifier variable and marker names. 
-Following rows contain genotype values for each individual
-\item \code{phefile}: First row contains names of phenotypic and environmental traits. One of these traits must be an identifier for each individual. 
-Following rows contain values of the traits for each individual. Note: This file may contain more observations than the file containing the marker data
-\item \code{mapfile}: Contains marker names and chromosome groupings
-}
-
-The function \code{\link{dlmap.convert.cross}} is available to convert other file formats into the appropriate structure and its use is recommended to ensure that the data is properly input. 
+The function \code{\link{dlcross}} is a constructor function for \code{dlcross}
+objects to be input to \code{\link{dlmap.asreml}} or \code{\link{dlmap.lme}}. 
+It will read in files in several different formats, including all those 
+compatible with \code{\link[qtl]{read.cross}} and two new formats to 
+accommodate association mapping populations and designs with extensive 
+phenotypic data. 
 
 The primary function is \code{\link{dlmap.asreml}}, which performs the iterative 
 algorithm to detect and position QTL on all chromosomes with significant 
@@ -49,8 +45,8 @@ in the package.
 Emma Huang and Andrew George \cr 
 Maintainer: Emma Huang <Emma.Huang@csiro.au>
 }
-\references{Huang, B.E. and George, A.W. Look before you leap: A new approach to QTL mapping. \emph{Manuscript in preparation}
+\references{Huang, B.E. and George, A.W. 2009. Look before you leap: A new approach to QTL mapping. TAG 119:899-911
 }
 \seealso{
-\code{\link[qtl]{read.cross}}, \code{\link[asreml]{asreml}}, \code{\link[ibdreg]{ibdreg}}, \code{\link[nlme]{lme}}
+\code{\link[ibdreg]{ibdreg}}, \code{\link[nlme]{lme}}
 }
