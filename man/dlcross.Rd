@@ -95,11 +95,9 @@ will not contain all of the phenotypic data for the sample}
 data(BSdat)
 data(BSphe)
 
-\dontrun{
 # convert data to dlmap format
 dl.in1 <- dlcross(format="rqtl", genobj=BSdat, idname="ID", fixpos=1)
 
 # convert data with separate phenotypic trait file
 dl.in2 <- dlcross(format="rqtl", genobj=BSdat, pheobj=BSphe, idname="ID", step=5)
-}
 }

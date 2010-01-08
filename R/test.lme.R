@@ -65,7 +65,12 @@ function(input, chrSet, prevLoc=NULL)
   LRTStats <- 2*(full.ll-null.ll)
   results$obs <- LRTStats
   results$raw.pval <- sapply(LRTStats, pvfx)
-  results$adj.pval <- results$raw.pval*n.chrSet
+
+  # depends on multtest value
+  if (input$multtest=="bon")
+  results$adj.pval <- sapply(results$raw.pval*n.chrSet, function(x) return(min(x, 1))) else {
+  sortp <- sort(results$raw.pval)
+  results$adj.pval <- sapply(sortp*(n.chrSet:1), function(x) return(min(x, 1)))}
   results$thresh <- qchibar(input$alpha)
 
   return(results)

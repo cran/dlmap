@@ -8,9 +8,11 @@ Fits the iterative algorithm for DLMapping. Reads in data, performs detection an
 \usage{
 dlmap.asreml(object, phename, baseModel, fixed = NULL, 
 random = NULL, rcov = NULL, sparse = NULL, pedigree, 
-seed = 1, n.perm = 0, alpha = 0.05, filestem = "dl", ...)
+seed = 1, n.perm = 0, multtest=c("holm", "bon"), 
+alpha = 0.05, filestem = "dl", ...)
 
-dlmap.lme(object, phename, fixed=NULL, seed=1, maxit=60, alpha=.05, filestem="dl")
+dlmap.lme(object, phename, fixed=NULL, seed=1, maxit=60, 
+multtest=c("holm", "bon"), alpha=.05, filestem="dl")
 }
 \arguments{
   \item{object}{dlcross object created by create.dlcross}
@@ -34,8 +36,10 @@ column is the individual ID, then the mother's ID and the father's ID.
 The name of the ID variable in the first column must match the \code{idname} variable }
   \item{seed}{ Random number seed. Default=1}
   \item{n.perm}{ Number of permutations used to get adjusted p-values at 
-each iteration of detection. If \code{n.perm=0} (default) the Bonferroni 
+each iteration of detection. If \code{n.perm=0} (default) the Holm 
 correction is used. }
+  \item{multtest}{ Correction used for multiple testing. If n.perm>0 will use 
+  permutation, but otherwise can choose between Holm and Bonferroni}
   \item{alpha}{ Significance level for testing }
   \item{filestem}{ Stem to add to names of any files generated in DL Mapping 
 process. Default="dl"}
@@ -73,7 +77,7 @@ safely. For \command{dlmap.lme} these individuals cannot be included, so the
 default behavior is to omit observations with missing values. 
 
 It is recommended that \code{no.perm} be set to 0 for initial exploratory 
-analysis, as the permutation analysis may be lengthy. The Bonferroni 
+analysis, as the permutation analysis may be lengthy. The Holm 
 correction is used to adjust for the number of chromosomes under 
 consideration at each detection stage. While this is a conservative 
 measure it seems to perform well in practice.
@@ -91,7 +95,7 @@ The file "filestem.det.log" is a record of iterations in the detection stage.
 For each iteration the REMLRT testing for genetic variation on each chromosome
 is output, along with adjusted p-values, genomewide threshold and markers 
 selected as fixed effects. The p-values are corrected for the
-number of chromosomes tested either by the Bonferroni correction or by 
+number of chromosomes tested either by the Holm correction or by 
 permutation. If the number of permutations (\code{n.perm}) is greater than 
 0, then for the Xth iteration an additional file "filestem.permX" will be 
 created which contains the test statistics for the permuted datasets. 
@@ -116,10 +120,10 @@ row contains the Wald statistic for the model fit in the localization stage}
 \author{ Emma Huang and Andrew George }
 \seealso{ \code{\link[dlmap]{dlcross}}, \code{\link[dlmap]{plot.dlmap}}, \code{\link[dlmap]{summary.dlmap}} }
 \examples{
+\dontrun{
 data(BSdat)
 data(BSphe)
 
-\dontrun{
 # Convert cross object to DL Mapping format
 dl.in1 <- dlcross(format="rqtl", genobj=BSdat, idname="ID", fixpos=1)
 

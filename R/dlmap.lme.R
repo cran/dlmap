@@ -1,5 +1,5 @@
 `dlmap.lme` <-
-function(object, phename, fixed=NULL, seed=1, maxit=60, alpha=.05, filestem="dl")
+function(object, phename, fixed=NULL, seed=1, maxit=60, multtest=c("holm", "bon"), alpha=.05, filestem="dl")
 {
   if (!require(nlme)) 
 	stop("nlme package must be installed to use this function. Please install it from CRAN before proceeding")
@@ -7,6 +7,8 @@ function(object, phename, fixed=NULL, seed=1, maxit=60, alpha=.05, filestem="dl"
   fixed.forma <- NULL
   set.seed(seed)
   type <- attr(object, "type")
+ 
+  if (missing(multtest)) multtest <- "holm"
 
   if (length(phename)!=1)
   	stop("Can only model one phenotypic trait")
@@ -34,6 +36,7 @@ function(object, phename, fixed=NULL, seed=1, maxit=60, alpha=.05, filestem="dl"
   nphe <- object$nphe
 
   object$alpha <- alpha
+  object$multtest <- multtest
 
   #####
   # Recentering

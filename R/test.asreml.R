@@ -100,7 +100,10 @@ function(input, chrSet, prevLoc=NULL, ...)
 	results$obs <- perm.test[1,]
 
 	results$raw.pval <- sapply(perm.test[1,], pvfx)
-	results$adj.pval <- sapply(results$raw.pval, function(x) return(min(x*n.chrSet,1)))
+	if (input$multtest=="bon")
+	results$adj.pval <- sapply(results$raw.pval, function(x) return(min(x*n.chrSet,1))) else {
+	sortp <- sort(results$raw.pval)
+	results$adj.pval <- sapply(sortp*(n.chrSet:1), function(x) return(min(x, 1)))}
 	results$thresh <- qchibar(input$alpha/n.chrSet)
   }
 

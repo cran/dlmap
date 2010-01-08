@@ -26,8 +26,6 @@ used to select which are plotted.
 # load dataset
 data(BSdat)
 
-\dontrun{
-dl.in1 <- dlcross(format="rqtl", obj=BSdat, idname="ID", fixpos=1)
+dl.in1 <- dlcross(format="rqtl", genobj=BSdat, idname="ID", fixpos=1)
 plot(dl.in1)
-}
 }

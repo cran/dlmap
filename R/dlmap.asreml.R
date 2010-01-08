@@ -1,5 +1,5 @@
 `dlmap.asreml` <-
-function(object, phename, baseModel, fixed=NULL, random=NULL, rcov=NULL, sparse=NULL, pedigree, seed=1, n.perm=0, alpha=.05, filestem="dl", ...)
+function(object, phename, baseModel, fixed=NULL, random=NULL, rcov=NULL, sparse=NULL, pedigree, seed=1, n.perm=0, multtest=c("holm", "bon"), alpha=.05, filestem="dl", ...)
 {
   idname <- object$idname
   type <- attr(object, "type")
@@ -19,6 +19,8 @@ function(object, phename, baseModel, fixed=NULL, random=NULL, rcov=NULL, sparse=
   set.seed(seed)
 
   # Check objects
+  if (missing(multtest))  multtest <- "holm"
+
   if (missing(phename))
 	stop("Phenotypic trait name is a required argument and is missing")
 
@@ -60,6 +62,7 @@ function(object, phename, baseModel, fixed=NULL, random=NULL, rcov=NULL, sparse=
 
   object$nperm <- n.perm
   object$alpha <- alpha
+  object$multtest <- multtest
 
   if (missing(baseModel))
   object$envModel <- list(fixed=fixed.forma, random=random, sparse=sparse, rcov=rcov, ginverse=Ainv)

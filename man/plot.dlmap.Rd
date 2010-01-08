@@ -30,14 +30,14 @@ and the intervals around them (and flanking markers) will be highlighted.
 If a subset of chromosomes are plotted and detected QTLs exist outside that 
 subset a warning will be given that QTLs have been omitted from the display. 
 
-The arguments \code{mcol}, \code{qcol} and \code{pcol} have been addedd for
+The arguments \code{mcol}, \code{qcol} and \code{pcol} have been added for
 personal colour highlighting the flanking markers, QTL regions and QTL 
 positions respectively. The procedure may also be given the usual \code{col}
 argument which will be passed on to the other markers. 
 
 In order to ensure that all marker names are displayed 
 without vertical overlap, the default value of the "cex" 
-parameter passed to "text" should be mainpulated. 
+parameter passed to "text" should be manipulated. 
 For large maps with many chromosomes, marker names and adjacent chromosomes
 will overlap horizontally. In this case it is suggested that the user 
 horizontally maximize the plotting window to remove overlap, or subset the
@@ -53,10 +53,10 @@ positions, and highlighted flanking markers.
 \seealso{\code{\link[wgaim]{link.map.cross}}}
 
 \examples{
+\dontrun{
 # load dataset
 data(BSdat)
 
-\dontrun{
 dl.in1 <- dlcross(format="rqtl", obj=BSdat, idname="ID", fixpos=1)
 BSdl <- dlmap.asreml(object=dl.in1, phename="phenotype", filestem="BS")
 BSdl <- dlmap.lme(object=dl.in1, phename="phenotype", filestem="BS")

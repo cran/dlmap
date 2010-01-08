@@ -24,10 +24,10 @@ effects and standard deviations, Z-ratio and p-value.
 \seealso{\code{\link[dlmap]{summary.dlcross}}, \code{\link[dlmap]{dlmap.asreml}}}
 
 \examples{
+\dontrun{
 # load dataset
 data(BSdat)
 
-\dontrun{
 dl.in1 <- dlcross(format="rqtl", obj=BSdat, idname="ID", fixpos=1)
 BSdl <- dlmap.asreml(object=dl.in1, phename="phenotype", filestem="BS")
 BSdl <- dlmap.lme(object=dl.in1, phename="phenotype", filestem="BS")

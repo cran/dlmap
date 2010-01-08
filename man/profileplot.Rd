@@ -37,10 +37,10 @@ positions displayed.
 }
 \author{ Emma Huang and Andrew George; Julian Taylor }
 \examples{
+\dontrun{
 # load dataset
 data(BSdat)
 
-\dontrun{
 dl.in1 <- dlcross(format="rqtl", obj=BSdat, idname="ID", fixpos=1)
 BSdl <- dlmap.asreml(object=dl.in1, phename="phenotype", filestem="BS")
 BSdl <- dlmap.lme(object=dl.in1, phename="phenotype", filestem="BS")
