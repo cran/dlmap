@@ -102,8 +102,10 @@ function(input, chrSet, prevLoc=NULL, ...)
 	results$raw.pval <- sapply(perm.test[1,], pvfx)
 	if (input$multtest=="bon")
 	results$adj.pval <- sapply(results$raw.pval, function(x) return(min(x*n.chrSet,1))) else {
-	sortp <- sort(results$raw.pval)
-	results$adj.pval <- sapply(sortp*(n.chrSet:1), function(x) return(min(x, 1)))}
+	pval <- as.matrix(rbind(c(1:length(results$raw.pval)), results$raw.pval))
+	pval <- as.matrix(pval[,order(pval[2,])])
+   	pval[2,] <- sapply(pval[2,]*(n.chrSet:1), function(x) return(min(x,1)))
+	results$adj.pval <- pval[2, order(pval[1,])] }
 	results$thresh <- qchibar(input$alpha/n.chrSet)
   }
 
