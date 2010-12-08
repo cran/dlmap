@@ -17,15 +17,15 @@ including spatial effects in field trials and random pedigree effects.
 \tabular{ll}{
 Package: \tab dlmap\cr
 Type: \tab Package\cr
-Version: \tab 1.06\cr
-Date: \tab 2010-01-11\cr
+Version: \tab 1.07\cr
+Date: \tab 2010-12-08\cr
 License: \tab GPL 2\cr
 }
 
 The function \code{\link{dlcross}} is a constructor function for \code{dlcross}
 objects to be input to \code{\link{dlmap.asreml}} or \code{\link{dlmap.lme}}. 
-It will read in files in several different formats, including all those 
-compatible with \code{\link[qtl]{read.cross}} and two new formats to 
+It will read in files in several different formats, including the \pkg{qtl}
+\code{cross} format and two new formats to 
 accommodate association mapping populations and designs with extensive 
 phenotypic data. 
 

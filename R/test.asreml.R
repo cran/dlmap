@@ -2,6 +2,7 @@
 function(input, chrSet, prevLoc=NULL, ...)
 {
   dfMerged <- input$dfMerged
+  dfMrk <- input$dfMrk
   envModel <- input$envModel
   n.perm <- input$nperm
   n.chr <- length(input$map)
@@ -35,12 +36,43 @@ function(input, chrSet, prevLoc=NULL, ...)
   # Include fixed effects for all markers which have already been mapped
   if (length(prevLoc)>0)
   formula$fixed <- paste(formula$fixed, "+", paste(prevLoc, collapse="+"), sep="")
-  formula$fixed <- as.formula(formula$fixed)
-
-  # Random effects for all markers on a chromosome excluding those which
+  formula$fixed <- as.formula(formula$fixed) 
+ 
+  ## Create new dfMerged matrix based on the group random effects
+############################################
+# Random effects for all markers on a chromosome excluding those which
   # enter the model as fixed effects
+  if (ncol(dfMrk) > n.chr*nrow(dfMrk))
+  {
+   dfm1 <- dfMerged[,c(1:nphe, match(prevLoc, names(dfMerged)))]
+   index <- list()
+   mat <- list()
+   ncolm <- vector(length=n.chr)
+   for (ii in 1:n.chr) {
+    index[[ii]] <- 1+setdiff(grep(paste("C", ii, "M", sep=""), names(dfMrk)[2:ncol(dfMrk)]), match(prevLoc, names(dfMrk)[2:ncol(dfMrk)]))
+    mat[[ii]] <- as.matrix(dfMrk[, index[[ii]]])
+    mat[[ii]] <- mroot(mat[[ii]] %*% t(mat[[ii]]))
+    ncolm[ii] <- ncol(mat[[ii]])
+   }
+   dfm2 <- do.call("cbind", mat)
+   dfm2 <- as.data.frame(dfm2)
+   dfm2 <- cbind(dfMrk[,1], dfm2)
+   names(dfm2)[1] <- colnames(dfMrk)[1]
+   dfMerged2 <- merge(dfm1, dfm2, by=names(dfm2)[1], all.x=TRUE, sort=FALSE)
+
+   colnames(dfMerged2)[(ncol(dfm1)+1):ncol(dfMerged2)] <- paste("var", 1:(ncol(dfMerged2)-ncol(dfm1)), sep="")
+
+   cumind <- c(0, cumsum(ncolm)) 
+
+   for (ii in 1:n.chr)
+	formula$group[[paste("g_", ii, "chr", sep="")]] <- ncol(dfm1) + (cumind[ii]+1):cumind[ii+1]
+  } else {
   for (ii in 1:n.chr)
     formula$group[[paste("g_", ii, "chr", sep="")]] <- nphe+setdiff(grep(paste("C", ii, "M", sep=""), names(dfMerged)[(nphe+1):ncol(dfMerged)]), match(prevLoc, names(dfMerged)[(nphe+1):ncol(dfMerged)]))
+    dfMerged2 <- dfMerged
+  } 
+
+############################################
 
   # Random effects for each chromosome in selected subset
   # Markers are modelled as independent and same variance within chromosomes
@@ -53,7 +85,7 @@ function(input, chrSet, prevLoc=NULL, ...)
   formula$random <- as.formula(formula$random)
 
   formula$dump.model <- TRUE
-  formula$data <- dfMerged
+  formula$data <- dfMerged2
   formula <- c(formula, ...)
   formula <- formula[!duplicated(formula)]
   formula <- formula[!sapply(formula, is.null)]
@@ -111,22 +143,30 @@ function(input, chrSet, prevLoc=NULL, ...)
 
   if (n.perm>0)
   {
-    dfMrk <- input$dfMrk
     namesrnd <- setdiff(names(dfMrk)[2:ncol(dfMrk)], prevLoc)
 
     for (ii in 1:(n.perm+1))
     {
-        df2 <- cbind(dfMrk[,1],dfMrk[perm.mat[,ii],2:ncol(dfMrk)])
-        names(df2)[1] <- names(dfMrk)[1]
+	if (ncol(dfMrk) > 20*nrow(dfMrk)) {
+	 ### now instead of merging the final matrix on, reconstruct
+	 names(dfmp)[1] <- names(dfMrk)[1]
+	 df3 <- merge(dfm1, dfmp, by=names(dfMrk)[1], all.x=TRUE, sort=FALSE)
+	 dfmp <- cbind(dfMrk[,1], dfm2[perm.mat[,ii],])
+    	} else {
+         df2 <- cbind(dfMrk[,1],dfm2[perm.mat[,ii],which(names(dfMrk)%in%namesrnd)])
+         names(df2)[1] <- names(dfMrk)[1]
+         df4 <- dfMerged[, match(c(idname, setdiff(names(dfMerged), names(df2))), names(dfMerged))]
+         df3 <- merge(df4, df2, by=idname, all.x=TRUE, sort=FALSE)
+	}
 
-        df4 <- dfMerged[, which(!(names(dfMerged)%in%namesrnd))]
-        df3 <- merge(df4, df2, by=idname, all.x=TRUE, sort=FALSE)
+	df3 <- df3[,match(names(dfMerged2), names(df3))]
+	full <- update(full, data=df3)	
 
         # replace data in model for random marker effects
-        index <- match(namesrnd, names(full$data))
-        index <- index[!is.na(index)]
-        index2 <- match(names(full$data)[index], names(df3))
-        full$data[,index] <- df3[, index2]
+#        index <- match(namesrnd, names(full$data))
+#        index <- index[!is.na(index)]
+#        index2 <- match(names(full$data)[index], names(df3))
+#        full$data[,index] <- df3[, index2]
 
 	# run full model
 	run <- asreml(model=full)
@@ -137,12 +177,13 @@ function(input, chrSet, prevLoc=NULL, ...)
 	for (cc in 1:n.chrSet)
 	{
 	   # replace data for random marker effects for each of the null models
-          index <- match(namesrnd, names(null.forma[[cc]]$data))
-          index <- index[!is.na(index)]
-          index2 <- match(names(null.forma[[cc]]$data)[index], names(df3))
-          null.forma[[cc]]$data[, index] <- df3[, index2]
-          run <- asreml(model=null.forma[[cc]])
-          if (run$converge==FALSE) results$converge <- FALSE
+#          index <- match(namesrnd, names(null.forma[[cc]]$data))
+#          index <- index[!is.na(index)]
+#          index2 <- match(names(null.forma[[cc]]$data)[index], names(df3))
+	   null.forma[[cc]] <- update(null.forma[[cc]], data=df3)
+#          null.forma[[cc]]$data[, index] <- df3[, index2]
+           run <- asreml(model=null.forma[[cc]])
+           if (run$converge==FALSE) results$converge <- FALSE
                 null.ll[cc] <- run$loglik
 	}
 

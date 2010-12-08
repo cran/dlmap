@@ -66,7 +66,7 @@ function(object, phename, baseModel, fixed=NULL, random=NULL, rcov=NULL, sparse=
 
   if (missing(baseModel))
   object$envModel <- list(fixed=fixed.forma, random=random, sparse=sparse, rcov=rcov, ginverse=Ainv)
-  else object$envModel <- baseModel$call
+  else object$envModel <- as.list(baseModel$call)[2:length(baseModel$call)]
 
   nphe <- object$nphe
   object$dfMerged[[idname]] <- as.factor(object$dfMerged[[idname]])
@@ -140,10 +140,13 @@ function(object, phename, baseModel, fixed=NULL, random=NULL, rcov=NULL, sparse=
      if (type=="f2") 	posD <- paste(pos, "D", sep="") else posD <- pos
 
      nmmap <- unlist(lapply(object$mapp, names))
+     if (type!="other")
      table[[2]] <- round(mappos[sort(tmpord)], 2)
      if (type=="f2") table[[2]] <- rep(table[[2]], each=2)
 
-     table[[3]] <- table[[4]] <- NULL
+     table[[3]] <- loc.out$qtls$pos
+#     table[[3]] <- table[[4]] <- NULL
+     table[[4]] <- NULL
 
      table[[5]] <- round(mod.fin$coefficients$fixed[match(loc.out$qtls$pos, names(mod.fin$coefficients$fixed))], 3)
      table[[6]] <- round((mod.fin$vcoeff$fixed[match(loc.out$qtls$pos, names(mod.fin$coefficients$fixed))]*mod.fin$sigma2)^.5, 3)
@@ -182,6 +185,7 @@ function(object, phename, baseModel, fixed=NULL, random=NULL, rcov=NULL, sparse=
 	}
      }
    names(table) <- c("Chr", "Pos", "Left Marker", "Right Marker", "Effect", "SD", "Z-value", "p-value")
+   if (is.null(table$Pos)) names(table)[3] <- "Marker"
    table <- table[!sapply(table, is.null)]
 
    output$Summary <- as.data.frame(do.call("cbind", table))

@@ -2,14 +2,9 @@
 \alias{dlcross}
 \title{ Constructor function for dlcross format}
 \description{
-Reads in files from all formats supported by \code{\link[qtl]{read.cross}} and converts them to dlmap input format. Also supports other formats for objects}
+Reads in objects in \code{cross} format and files or objects in \code{dlmap} format and converts them to dlmap input format. }
 \usage{
-dlcross(format = c("csv", "csvr", "csvs", "csvsr", "mm", "qtx", 
-"qtlcart", "gary", "karl", "rqtl", "dlmap", "other"), genobj, pheobj, 
-mapobj, idname="ID", dir = "", file, genfile, mapfile, phefile, 
-chridfile, mnamesfile, pnamesfile, na.strings = c("-", "NA"),
-genotypes = c("A", "H", "B", "D", "C"), alleles = c("A", "B"), type, step=0,
-fixpos=0, estmap=TRUE, ...)
+dlcross(format = c("rqtl", "dlmap", "other"), genobj, pheobj, mapobj, idname="ID", genfile, phefile, mapfile, type, step=0, fixpos=0, estmap=TRUE, ...)
 }
 \arguments{
  \item{format}{ See documentation for \code{\link[qtl]{read.cross}}. Also supports the 
@@ -24,18 +19,9 @@ phenotypic or environmental data}
 containing marker names, chromosomes and marker positions}
   \item{idname}{ Unique identifier variable name; will be used to match 
 phenotypic and marker data }
-  \item{dir}{ Directory where input files are located; default is working 
-directory}
-  \item{file}{ see \code{\link[qtl]{read.cross}}}
-  \item{genfile}{ see \code{\link[qtl]{read.cross}}; if format="dlmap" see below}
-  \item{mapfile}{ see \code{\link[qtl]{read.cross}}; if format="dlmap" see below}
-  \item{phefile}{ see \code{\link[qtl]{read.cross}}; if format="dlmap" see below}
-  \item{chridfile}{ see \code{\link[qtl]{read.cross}}}
-  \item{mnamesfile}{ see \code{\link[qtl]{read.cross}}}
-  \item{pnamesfile}{ see \code{\link[qtl]{read.cross}}}
-  \item{na.strings}{ see \code{\link[qtl]{read.cross}}}
-  \item{genotypes}{ see \code{\link[qtl]{read.cross}}}
-  \item{alleles}{ see \code{\link[qtl]{read.cross}}}
+  \item{genfile}{ if format="dlmap" see below}
+  \item{mapfile}{ if format="dlmap" see below}
+  \item{phefile}{ if format="dlmap" see below}
   \item{type}{Type of experimental cross; only necessary if format="dlmap" or 
 "other"; if not input, will be assumed that data is from unrelated individuals}
   \item{step}{ Step size for localization stage, i.e. if \code{step=2}, grid 
@@ -46,14 +32,15 @@ of positions spaced 2 cM apart are considered for QTL locations. If
 If \code{fixpos=0} (default) positions are only located at markers. }
   \item{estmap}{Flag for whether to re-estimate the linkage map. Cannot be done 
 for format="other"}
-  \item{...}{ additional arguments to \code{\link[qtl]{read.cross}}}
+  \item{...}{ additional arguments}
 }
 \details{
 This function constructs \code{dlcross} objects for input into 
 \code{\link{dlmap.asreml}} or \code{\link{dlmap.lme}}. The \code{format} 
-argument allows for a wide range of input data formats, including all those
-compatible with \code{\link[qtl]{read.cross}}. In addition, format="dlmap"
-takes three files or objects in the following form. 
+argument allows for compatibility with the \code{cross} format as supported
+by \code{\link[qtl]{read.cross}} in R/qtl. 
+In addition, format="dlmap" or "other" takes three files or 
+objects in the following form. 
 
 \itemize{
 \item \code{genfile}: First row contains an identifier variable and marker names. 
@@ -64,8 +51,7 @@ Following rows contain values of the traits for each individual. Note: This file
 }
 
 If a single set of trait values is available for each genotype, then 
-phenotypic data will be input through the arguments \code{genobj}, \code{file},
-or \code{phefile} (depending on the file format). 
+phenotypic data will be input through the arguments \code{genobj} or \code{phefile} (depending on the file format). 
 The argument \code{pheobj} allows for input of phenotypic data on replicates
 or additional individuals which are not necessarily genotyped. 
 

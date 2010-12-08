@@ -23,18 +23,19 @@ function(object, chr, marker.names=TRUE, QTLpos=TRUE, pch=20, ...)
    for (ii in chr)
    {
      prof <- object$profile[[ii]]
-     plot(t(prof), xlab=paste(names(object$profile)[ii], " Position (cM)", sep=""),
+     ichr <- names(object$profile)[ii]
+     plot(t(prof), xlab=paste(ichr, " Position (cM)", sep=""),
 	 ylab="Wald", pch=pch, type="o")
 
-     mrk <- setdiff(1:ncol(prof), grep("loc", names(object$mapp[[ii]])))
-     labels <- names(object$mapp[[ii]])[mrk]
+     mrk <- setdiff(1:ncol(prof), grep("loc", names(object$mapp[[ichr]])))
+     labels <- names(object$input$mapp[[ichr]])[mrk]
      pos <- prof[1, mrk]
 
      if (marker.names)
         axis(side=3, at=pos, labels=labels)
 
      qpos <- as.numeric(as.character(object$Summary$Pos))
-     qchr <- which(as.character(object$Summary$Chr)==names(object$input$map)[ii])
+     qchr <- which(as.character(object$Summary$Chr)==ichr)
 
      if (QTLpos)
 	abline(v=qpos[qchr])

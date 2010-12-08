@@ -1,4 +1,4 @@
-export(dlcross, dlmap.asreml, dlmap.lme, ngen, nmrk, nphen, profileplot)
+export(dlcross, dlmap.asreml, dlmap.lme, ngen, nmrk, nphen, profileplot, calc.pos)
 S3method(plot, dlcross)
 S3method(plot, dlmap)
 S3method(profileplot, dlmap)

@@ -32,7 +32,7 @@ function(input, filestem, ...)
   if (n.perm>0)
   { 
     write(paste(c("Perm", chr.names), collapse=" "), permfile)
-    write(t(cbind(c(1:n.perm), test$perm.ts)), permfile, append=TRUE)
+    write(t(cbind(c(1:(n.perm+1)), test$perm.ts)), permfile, append=TRUE)
   }
 
   # Output observed statistics to logfile
@@ -110,7 +110,7 @@ function(input, filestem, ...)
 	if (n.perm>0)
 	{
   	 write(paste(c("Perm", chr.names[chrSet]), collapse=" "), permfile)
-  	 write(t(cbind(c(1:n.perm), test$perm.ts)), permfile, append=TRUE)
+  	 write(t(cbind(c(1:(n.perm+1)), test$perm.ts)), permfile, append=TRUE)
 	}
 
 	if (test$converge==FALSE) 	results$converge <- FALSE

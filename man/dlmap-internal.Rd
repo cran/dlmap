@@ -13,11 +13,19 @@
 \alias{calc.genoprob2}
 \alias{wald.test.asreml}
 \alias{cintern}
+\alias{dlcross.cross}
+\alias{dlcross.dlmap}
+\alias{dlcross.other}
 \title{ Internal dlmap functions}
 \description{
   Internal dlmap functions. These are generally not to be called by the user. 
 }
 \usage{
+
+dlcross.cross(genobj, pheobj, idname, step, fixpos, estmap)
+dlcross.dlmap(genobj, pheobj, mapobj, idname, genfile, mapfile, phefile, type, step, fixpos, estmap, ...)
+dlcross.other(genobj, pheobj, mapobj, idname, genfile, mapfile, phefile)
+
 detect.asreml(input, filestem, ...)
 detect.lme(input, filestem)
 

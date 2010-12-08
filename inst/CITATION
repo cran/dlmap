@@ -1,0 +1,16 @@
+citHeader("To cite R/dlmap in publications use:")
+
+citEntry(entry="article",
+         title = "Look before you leap: a new approach to mapping QTL",
+         author = personList(as.person("B. Emma Huang"),
+                             as.person("Andrew W. George")),
+         journal = "Theoretical and Applied Genetics",			     
+         year = 2009,
+	 volume = 119,
+	 pages = "899-911",
+         
+         textVersion = 
+         paste("Huang and George (2009) Look before you leap: a new",
+               "approach to mapping QTL. TAG 119-899.911.")
+         )
+
