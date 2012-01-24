@@ -1,24 +1,27 @@
-`map.det.asreml` <-
-function(input, s.chr, chrSet, prevLoc=NULL, ...)
+`dlmapdet` <-
+function(input, algorithm, s.chr, chrSet, prevLoc=NULL, ...)
 {
-  dfMrk <- input$dfMrk
   dfMerged <- input$dfMerged
-  envModel <- input$envModel
   n.chr <- length(input$map)
   nphe <- input$nphe
-
   type <- attr(input, "type") 
   results <- list()
   results$converge <- TRUE
   formula <- list()
   wald <- rep(0, length(input$map[[s.chr]]))
 
-  formula <- envModel
-  groups <- list()
+  if (algorithm=="asreml") {
+    dfMrk <- input$dfMrk
+    envModel <- input$envModel
+    formula <- envModel
+    groups <- list()
 
+    ### calculate the minimum number of markers per chromosome
+    nmrkchr <- vector(length=n.chr)
+    for (i in 1:n.chr) nmrkchr[i] <- length(grep(paste("C", i, "M", sep=""), colnames(dfMrk)))
 ## Set up new dfMerged based on grouped random effects ##
 ###########################################
-  if (ncol(input$dfMrk) > n.chr*nrow(dfMrk)) {
+  if (min(nmrkchr) > nrow(dfMrk)) {
    dfm1 <- dfMerged[, c(1:nphe, match(prevLoc, names(input$dfMerged)))]
 
    # Set up random effects for markers on each chromosome	
@@ -93,7 +96,7 @@ function(input, s.chr, chrSet, prevLoc=NULL, ...)
 
 	formula$fixed <- as.formula(formula$fixed)
 
-	formula$data <- dfMerged3
+	formula$data <- "dfMerged3"
    	formula$Cfixed <- TRUE
   	formula <- c(formula, ...)
    	formula <- formula[!duplicated(formula)]
@@ -114,9 +117,69 @@ function(input, s.chr, chrSet, prevLoc=NULL, ...)
 
 	names <- paste("C", s.chr, "M", mrkloop[jj], c("", "D", "A"), sep="")
 	if (model$coefficients$fixed[names(model$coefficients$fixed) %in% names]!=0) 	
-	wald[mrkloop[jj]] <- wald.test.asreml(model, list(list(which(model$coefficients$fixed[names(model$coefficients$fixed) %in% names]!=0), "zero")))$zres$zwald
+	if (type=="f2")
+	wald[mrkloop[jj]] <- waldtest.asreml(model, list(list(which(model$coefficients$fixed[names(model$coefficients$fixed) %in% names]!=0), "zero")))$zres$zwald
+	else	{
+		cf <- summary(model, all=TRUE)$coef.fixed
+		wald[mrkloop[jj]] <- (cf[which(rownames(cf) %in% names),3])^2
+		}
   }
 
+  }  ## end of algorithm==asreml
+
+  if (algorithm=="lme") {
+	  fixed <- input$envModel$fixed
+  chrRE <- vector()
+
+  # Set up random effects for markers on each chromosome	
+  for (kk in 1:n.chr)
+  chrRE[kk] <- paste("pdIdent(~", paste(setdiff(names(dfMerged)[grep(paste("C", kk, "M", sep=""), names(dfMerged))], prevLoc), collapse="+"), "-1)", sep="")
+
+  # Loop over positions on the selected chromosome
+  mrkloop <- unlist(lapply(strsplit(names(dfMerged)[setdiff(grep(paste("C", s.chr, "M", sep=""), names(dfMerged)[(nphe+1):ncol(dfMerged)]), match(prevLoc, colnames(dfMerged)[(nphe+1):ncol(dfMerged)]))+nphe], "M"), function(x) return(x[2])))
+
+  if (type=="f2")
+	mrkloop <- unique(substr(mrkloop, 1, nchar(mrkloop)-1))
+  mrkloop <- as.numeric(mrkloop)
+
+  for (jj in 1:length(mrkloop))
+  {
+    # Only include random effects for chromosomes not being scanned
+    if (length(chrSet)>2)	
+	formula$random <- paste("pdBlocked(list(", paste(chrRE[setdiff(chrSet, s.chr)], collapse=","), "))", sep="")
+
+    if (length(chrSet)==2)
+	formula$random <- chrRE[setdiff(chrSet,s.chr)]
+
+    formula$fixed <- paste(as.character(fixed)[2], "~", as.character(fixed)[3], sep="")
+
+	# If there are markers already mapped on other chromosomes, add in as fixed effects 
+    if (length(prevLoc) >0)
+	formula$fixed <- paste(formula$fixed, "+",paste(prevLoc, collapse="+"), sep="")
+
+    	effectnames <- paste("C", s.chr, "M", mrkloop[jj], sep="")
+    	if (type=="f2") effectnames <- paste(effectnames, c("A", "D"), sep="")
+    	
+	formula$fixed <- paste(formula$fixed, "+", paste(effectnames, collapse="+"), sep="")
+
+	formula$fixgrp <- paste(formula$fixed, "| grp1", sep="")
+	formula$fixed <- as.formula(formula$fixed)
+	formula$fixgrp <- as.formula(formula$fixgrp)
+
+	gd <- groupedData(formula$fixgrp, data=dfMerged)
+
+	# Fit model - different forms depending on relevant terms
+	if (length(chrSet)>1)
+	model <- lme(fixed=formula$fixed, random=eval(parse(text=formula$random)), data=gd, control=lmeControl(maxIter=input$maxit), na.action=na.omit)
+
+	if (length(chrSet)==1)
+	model <- lme(fixed=formula$fixed, random=~1|grp1, data=gd, control=lmeControl(maxIter=input$maxit), na.action=na.omit)
+
+	# Get output - Wald statistic for position fixed effect
+	wald[mrkloop[jj]] <- anova(model, Terms=effectnames)[1,3]
+  }
+} ## end of algorithm==lme  
+ 
   results$wald <- wald
   return(results)
 }

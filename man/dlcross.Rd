@@ -1,10 +1,14 @@
 \name{dlcross}
 \alias{dlcross}
-\title{ Constructor function for dlcross format}
+\alias{plot.dlcross}
+\alias{summary.dlcross}
+\title{ Constructor, summary and plotting functions for dlcross format}
 \description{
 Reads in objects in \code{cross} format and files or objects in \code{dlmap} format and converts them to dlmap input format. }
 \usage{
 dlcross(format = c("rqtl", "dlmap", "other"), genobj, pheobj, mapobj, idname="ID", genfile, phefile, mapfile, type, step=0, fixpos=0, estmap=TRUE, ...)
+\method{plot}{dlcross}(x, chr, pheno.col, \dots)
+\method{summary}{dlcross}(object, \dots)
 }
 \arguments{
  \item{format}{ See documentation for \code{\link[qtl]{read.cross}}. Also supports the 
@@ -32,11 +36,15 @@ of positions spaced 2 cM apart are considered for QTL locations. If
 If \code{fixpos=0} (default) positions are only located at markers. }
   \item{estmap}{Flag for whether to re-estimate the linkage map. Cannot be done 
 for format="other"}
-  \item{...}{ additional arguments}
+  \item{\dots}{ additional arguments}  
+  \item{x}{input to plot function, object of class \code{dlcross}}
+  \item{chr}{character string naming the subset of chromosomes to plot; if numeric, a vector of chromosome indices}
+  \item{pheno.col}{vector of phenotypes for which to show barplots/histograms}
+  \item{object}{input to summary function, object of class \code{dlcross}}
 }
 \details{
-This function constructs \code{dlcross} objects for input into 
-\code{\link{dlmap.asreml}} or \code{\link{dlmap.lme}}. The \code{format} 
+The main function constructs \code{dlcross} objects for input into 
+\code{\link{dlmap}}. The \code{format} 
 argument allows for compatibility with the \code{cross} format as supported
 by \code{\link[qtl]{read.cross}} in R/qtl. 
 In addition, format="dlmap" or "other" takes three files or 
@@ -60,6 +68,12 @@ analyzed, and in this case the data can be input as with format="dlmap",
 but a genetic linkage map is not required. Hence the mapfile only needs the
 first two columns of marker names and chromosome groupings. 
 
+The plot function plots diagnostics summarizing the data. If the type of cross is not "other", will plot the genetic map for the cross. Will also plot a histogram or barplot of the first few phenotypic variables. Will only plot a maximum of three phenotypic variables; pheno.col can be 
+used to select which are plotted. 
+
+The summary function outputs a summary of data stored in dlcross object, including number of genotypes, number of phenotypes, number of phenotypic variables, number of chromosomes and markers per chromosome. For experimental crosses, based off of \code{cross} 
+object summary; similar output for association mapping populations. 
+
 } 
 \value{ Object with class "dlcross" which can be input to dlmap.asreml or 
 dlmap.lme. Contains the following elements:
@@ -73,10 +87,11 @@ dlmap.lme. Contains the following elements:
 there are replicates, i.e., more phenotypic data than genotypic, this object
 will not contain all of the phenotypic data for the sample}
 }
-\seealso{\code{\link[dlmap]{summary.dlcross}}, \code{\link[dlmap]{plot.dlcross}}}
+\seealso{\code{\link[qtl]{plot.cross}}}
 \references{ Huang, BE and George, AW. 2009. Look before you leap: A new approach to QTL mapping. TAG 119:899-911}
 \author{ Emma Huang and Andrew George }
 \examples{
+\dontrun{
 # load dataset
 data(BSdat)
 data(BSphe)
@@ -86,4 +101,8 @@ dl.in1 <- dlcross(format="rqtl", genobj=BSdat, idname="ID", fixpos=1)
 
 # convert data with separate phenotypic trait file
 dl.in2 <- dlcross(format="rqtl", genobj=BSdat, pheobj=BSphe, idname="ID", step=5)
+
+plot(dl.in2)
+summary(dl.in2)
+}
 }

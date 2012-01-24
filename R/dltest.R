@@ -1,49 +1,50 @@
-`test.asreml` <-
-function(input, chrSet, prevLoc=NULL, ...)
+`dltest` <-
+function(input, algorithm, chrSet, prevLoc=NULL, ...)
 {
   dfMerged <- input$dfMerged
-  dfMrk <- input$dfMrk
-  envModel <- input$envModel
-  n.perm <- input$nperm
-  n.chr <- length(input$map)
-  nphe <- input$nphe
-  idname <- input$idname
-
-  formula <- envModel 
-  random.forma <- list() 
-  results <- list()
-  null.forma <- list()
   n.chrSet <- length(chrSet)
   null.ll <- vector(length=n.chrSet)
+  null.forma <- list()
+  random.forma <- list() 
+  results <- list()
+  results$converge <- TRUE
+  formula <- list() 
 
-  npop <- ngen(input)
+  if (algorithm=="asreml") {
+    dfMrk <- input$dfMrk
+    envModel <- input$envModel
+    n.perm <- input$nperm
+    n.chr <- length(input$map)
+    nphe <- input$nphe
+    idname <- input$idname
 
-  # Create permutation matrices  
-  perm.test <- matrix(nrow=n.perm+1, ncol=n.chrSet)
-  maxp <- vector(length=n.perm+1)
-  perm.mat <- matrix(nrow=npop, ncol=n.perm+1)
-  perm.mat[,1] <- c(1:npop)
+    formula <- envModel 
+    npop <- ngen(input)
 
-  if (n.perm>0)
-  for (kk in 2:(n.perm+1))
+    # Create permutation matrices  
+    perm.test <- matrix(nrow=n.perm+1, ncol=n.chrSet)
+    maxp <- vector(length=n.perm+1)
+    perm.mat <- matrix(nrow=npop, ncol=n.perm+1)
+    perm.mat[,1] <- c(1:npop)
+
+    if (n.perm>0)
+    for (kk in 2:(n.perm+1))
 	perm.mat[,kk] <- sample(npop)
 
-  results$converge <- TRUE
-
-  # Fit full model, with all chromosomes having separate VCs
+    # Fit full model, with all chromosomes having separate VCs
     formula$fixed <- paste(as.character(envModel$fixed)[2], "~",as.character(envModel$fixed[3]), sep="")
-
-  # Include fixed effects for all markers which have already been mapped
-  if (length(prevLoc)>0)
-  formula$fixed <- paste(formula$fixed, "+", paste(prevLoc, collapse="+"), sep="")
-  formula$fixed <- as.formula(formula$fixed) 
+    # Include fixed effects for all markers which have already been mapped
+    if (length(prevLoc)>0)
+    formula$fixed <- paste(formula$fixed, "+", paste(prevLoc, collapse="+"), sep="")
+    formula$fixed <- as.formula(formula$fixed) 
  
-  ## Create new dfMerged matrix based on the group random effects
+    nmrkchr <- vector(length=n.chr)
+    for (i in 1:n.chr) nmrkchr[i] <- length(grep(paste("C", i, "M", sep=""), colnames(dfMrk)))
 ############################################
 # Random effects for all markers on a chromosome excluding those which
-  # enter the model as fixed effects
-  if (ncol(dfMrk) > n.chr*nrow(dfMrk))
-  {
+## Set up new dfMerged based on grouped random effects ##
+###########################################
+  if (min(nmrkchr) > nrow(dfMrk)) {
    dfm1 <- dfMerged[,c(1:nphe, match(prevLoc, names(dfMerged)))]
    index <- list()
    mat <- list()
@@ -85,7 +86,7 @@ function(input, chrSet, prevLoc=NULL, ...)
   formula$random <- as.formula(formula$random)
 
   formula$dump.model <- TRUE
-  formula$data <- dfMerged2
+  formula$data <- "dfMerged2"
   formula <- c(formula, ...)
   formula <- formula[!duplicated(formula)]
   formula <- formula[!sapply(formula, is.null)]
@@ -202,6 +203,77 @@ function(input, chrSet, prevLoc=NULL, ...)
 	results$perm.ts <- perm.test
 
   } # end of check whether n.perm>0
+  } # end of algorithm==asreml
+  
+  if (algorithm=="lme") {
+    fixed <- input$envModel$fixed
+    f.mrk <- vector()
+    chrRE <- vector()
+
+    LRTStats <- vector() 
+
+  # Construct vector of already mapped markers (f.mrk) 
+  formula$fixed <- paste(as.character(fixed)[2], as.character(fixed)[1], as.character(fixed)[3], sep="")
+
+  # Include fixed effects for all markers which have already been mapped
+  if (length(prevLoc)>0)
+  formula$fixed <- paste(formula$fixed, "+", paste(prevLoc, collapse="+"))
+
+  formula$fixgrp <- paste(formula$fixed, "|grp1", sep="")
+  formula$fixed <- as.formula(formula$fixed)
+  formula$fixgrp <- as.formula(formula$fixgrp)
+
+  gd <- groupedData(formula$fixgrp, data=dfMerged)
+
+  # Random effects for all markers on a chromosome excluding those which
+  # enter the model as fixed effects
+  for (ii in 1:length(input$map))
+   	chrRE[ii] <- paste("pdIdent(~", paste(setdiff(names(dfMerged)[grep(paste("C", ii, "M", sep=""), names(dfMerged))], prevLoc), collapse="+"), "-1)", sep="")
+
+  formula$random <- paste("pdBlocked(list(", paste(chrRE[chrSet], collapse=","), "))", sep="")
+
+  if (length(chrSet)==1)
+  formula$random <- chrRE[chrSet]
+
+  full <- lme(fixed=formula$fixed, random=eval(parse(text=formula$random)), data=gd, control=lmeControl(maxIter=input$maxit), na.action=na.omit)
+
+  full.ll <- full$logLik
+
+  # If there is only one chromosome in the subset, compare a full model to the model
+  # with no random effects
+  if (n.chrSet==1)
+    null.forma[[1]] <- lme(fixed=formula$fixed, data=gd, control=lmeControl(maxIter=input$maxit), na.action=na.omit)
+ 
+  # Otherwise, compare the full model to leave-one-VC-out models, removing 
+  # each chromosome effect one at a time
+  if (n.chrSet>1)
+  for (cc in 1:n.chrSet)
+  {
+    random.forma[[cc]] <- paste("pdBlocked(list(", paste(chrRE[setdiff(chrSet, chrSet[cc])], collapse=","), "))", sep="")
+
+    if (n.chrSet==2)
+    random.forma[[cc]] <- chrRE[setdiff(chrSet, chrSet[cc])]
+  
+    # Fit the null model, where we omit the specified chromosome random effect
+    null.forma[[cc]] <- lme(fixed=formula$fixed, random=eval(parse(text=random.forma[[cc]])), data=gd, control=lmeControl(maxIter=input$maxit), na.action=na.omit)
+
+    null.ll[cc] <- null.forma[[cc]]$logLik
+  }
+ 
+  LRTStats <- 2*(full.ll-null.ll)
+  results$obs <- LRTStats
+  results$raw.pval <- sapply(LRTStats, pvfx)
+
+  # depends on multtest value
+  if (input$multtest=="bon")
+  results$adj.pval <- sapply(results$raw.pval*n.chrSet, function(x) return(min(x, 1))) else {
+	pval <- as.matrix(rbind(1:length(results$raw.pval), results$raw.pval))
+	pval <- as.matrix(pval[,order(pval[2,])])
+   	pval[2,] <- sapply(pval[2,]*(n.chrSet:1), function(x) return(min(x,1)))
+	results$adj.pval <- pval[2,order(pval[1,])] }
+  results$thresh <- qchibar(input$alpha/n.chrSet)
+
+  }
 
   return(results)
 }

@@ -1,5 +1,5 @@
-`localize.asreml` <-
-function(input, QTLperChr, ...)
+`dllocalize` <-
+function(input, algorithm, QTLperChr, ...)
 {
   locations <- list()
   results <- list()
@@ -11,7 +11,7 @@ function(input, QTLperChr, ...)
   # Initialize convergence flag
   results$converge=TRUE
 
-    # Loop over all chromsomes which were significant in the preceding detection step
+  # Loop over all chromsomes which were significant in the preceding detection step
     for (kk in 1:length(chrSet))
     {
      	no.qtls <- QTLperChr[chrSet[kk]][[1]]
@@ -34,7 +34,7 @@ function(input, QTLperChr, ...)
 	for (mm in 1:no.qtls)
 	{
 	  # 1D scan for QTL
-     	  map.results <- map.loc.asreml(input, s.chr=chrSet[kk], chrSet=chrSet, prevLoc=loc1, ...)
+     	  map.results <- dlmaploc(input, algorithm, s.chr=chrSet[kk], chrSet=chrSet, prevLoc=loc1, ...)
 	
 	  # Update convergence flag
 	  if (map.results$converge == FALSE) 	results$converge <- FALSE

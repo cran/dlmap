@@ -1,4 +1,4 @@
-`calc.pos` <-
+`calcpos` <-
 function(cross, step, fixpos)
 {
   n.chr <- nchr(cross)

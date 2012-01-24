@@ -1,4 +1,4 @@
-wald.test.asreml <- function(object, cc)
+waldtest.asreml <- function(object, cc)
 {
       call <- match.call()
       if(oldClass(object) != "asreml")

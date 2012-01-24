@@ -24,7 +24,7 @@ function(object, chr, marker.names=TRUE, QTLpos=TRUE, pch=20, ...)
    {
      prof <- object$profile[[ii]]
      ichr <- names(object$profile)[ii]
-     plot(t(prof), xlab=paste(ichr, " Position (cM)", sep=""),
+     plot(prof, xlab=paste("Chr ", ichr, " Position (cM)", sep=""),
 	 ylab="Wald", pch=pch, type="o")
 
      mrk <- setdiff(1:ncol(prof), grep("loc", names(object$mapp[[ichr]])))

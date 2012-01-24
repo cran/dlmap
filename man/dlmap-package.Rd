@@ -1,6 +1,6 @@
 \name{dlmap-package}
 \alias{dlmap-package}
-\alias{dlmap}
+\alias{dlmap-pkg}
 \docType{package}
 \title{
 DLMapping for QTL detection
@@ -17,25 +17,25 @@ including spatial effects in field trials and random pedigree effects.
 \tabular{ll}{
 Package: \tab dlmap\cr
 Type: \tab Package\cr
-Version: \tab 1.07\cr
-Date: \tab 2010-12-08\cr
+Version: \tab 1.10\cr
+Date: \tab 2012-01-24\cr
 License: \tab GPL 2\cr
 }
 
 The function \code{\link{dlcross}} is a constructor function for \code{dlcross}
-objects to be input to \code{\link{dlmap.asreml}} or \code{\link{dlmap.lme}}. 
+objects to be input to \code{\link{dlmap}}. 
 It will read in files in several different formats, including the \pkg{qtl}
 \code{cross} format and two new formats to 
 accommodate association mapping populations and designs with extensive 
 phenotypic data. 
 
-The primary function is \code{\link{dlmap.asreml}}, which performs the iterative 
+The primary function is \code{\link{dlmap}}, which performs the iterative 
 algorithm to detect and position QTL on all chromosomes with significant 
 genetic variation. This can accomodate sophisticated mixed models for phenotypic
 variation in addition to the genetic modeling. 
 
-Because ASReml-R is proprietary, we provide additional functions for DLMapping using the \pkg{nlme} package to fit mixed models. However, the function
-\code{\link{dlmap.lme}} does not provide as many features as that based on ASReml-R. 
+Because ASReml-R is proprietary, we provide the option of using the \pkg{nlme} package to fit mixed models via the \code{algorithm} argument. However, there
+are some features which are only accessible when the \code{algorithm} used is \code{asreml}.
 
 The vignette included in this package gives more background on the methodology, input file structure, and examples of how to use each of the important functions
 in the package. 

@@ -160,7 +160,7 @@
   if ((step>0) & (fixpos>0))
 	stop("Invalid input: only one of step and fixpos should be > 0")
 
-  gp <- calc.pos(exp.dat, step, fixpos)
+  gp <- calcpos(exp.dat, step, fixpos)
   mapp <- lapply(gp$geno, function(x) return(attr(x$prob, "map")))
   coln <- unlist(lapply(mapp, names))
   chr <- vector()
@@ -197,7 +197,7 @@
    names(dfm)[seq(1, ncol(dfm), 2)] <- colnames(dfm1)
    names(dfm)[seq(2, ncol(dfm), 2)] <- colnames(dfm2)
    } else {
-   dat <- lapply(gp$geno, function(x) return(x$prob[,,1]))
+   dat <- lapply(gp$geno, function(x) return(x$prob[,,2]))
    dfm <- as.data.frame(do.call("cbind", dat))
    pos <- grep("loc", coln)
    mrk <- setdiff(1:length(coln), pos)
