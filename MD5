@@ -1,7 +1,7 @@
-d8f87cd9a58688a2bc6f4f40a0f8d6f1 *DESCRIPTION
-d41d8cd98f00b204e9800998ecf8427e *NAMESPACE
+49775c14909e8fb20c797c4dad5df336 *DESCRIPTION
+ba351f030f2e3864154bbae978e04b60 *NAMESPACE
 93382c9f1d25cbfa1bf593b922a43c2f *NEWS
-12f4ea2a3fe85b641c8b33040cd1a28a *R/calc.genoprob2.R
+6fccafe3ae777b92eb28084f0e44ffcc *R/calc.genoprob2.R
 ee4d15770f03c41a98c82fce172b10be *R/calcpos.R
 e81c16dc65221bc492a317ba2e013fba *R/cintern.R
 481dca32055a8789b2b6608c73d20f79 *R/dlcross.R
@@ -10,10 +10,10 @@ e81c16dc65221bc492a317ba2e013fba *R/cintern.R
 9718b5ea3dcc9f0e3d4e8256cab6ac82 *R/dlcross.other.R
 5493705273da4d257e88358163ddff88 *R/dldetect.R
 b2409083f4632baa3583910b80225684 *R/dllocalize.R
-54feaddffedb3bca959297304d6b7939 *R/dlmap.R
-8cc494af490b0f02686889f4cb42c2bb *R/dlmapdet.R
-6d832463fba3549915f840ff33af27fe *R/dlmaploc.R
-722ec997e1d227dbd1278c9b68082ab1 *R/dltest.R
+5aa34990955e05ac73cb225cec5803ed *R/dlmap.R
+21f5b480f4ccadb7fb668e9bd6e917c1 *R/dlmapdet.R
+4f87a28e502afb80a74aa27d3993a8c7 *R/dlmaploc.R
+f1a14999a04c6e1c8caf2ca3ffc59549 *R/dltest.R
 ca16047a1bb4c77774b4bec95cfee6b2 *R/ngen.R
 c41c712a2f3dd428e33ad9bfc0fb1732 *R/ngen.dlcross.R
 49914b26bac7a16e8d8833758c5c0cca *R/ngen.dlmap.R
@@ -24,7 +24,7 @@ e85597f15d23568fb67abf5d7ea87b97 *R/nmrk.R
 736397fa3a4193b3121f7dcac9e70c83 *R/nphen.dlcross.R
 0d096206f50f04b61f86b8dd01ea357e *R/nphen.dlmap.R
 4ee0c7de038edb449d074410a54a5717 *R/plot.dlcross.R
-96ee608fae75ce8f46172e371daf8e92 *R/plot.dlmap.R
+8e4aba016f51837ebcf9cbd74fdc806e *R/plot.dlmap.R
 3e6170da8056016c81421926973da4ac *R/print.dlcross.R
 80136f6f49be6872676c9ee7a797d75b *R/print.dlmap.R
 96ec9d3726e4b777bbae4b0b671b962c *R/profileplot.R
@@ -41,7 +41,7 @@ c4117a5f1f0dcad9afe01571b3960f38 *R/waldtest.R
 345ddaa5b2d391257d59ec02e3013a0a *man/BSdat.Rd
 4640e5dd9fed2e91df7134214644e562 *man/BSphe.Rd
 c4fe7aa5d79d20df75f143da95bd2a15 *man/data.access.Rd
-0e2fd72511f42e4c789d4458369005d4 *man/dlcross.Rd
-14a1bd97e20281c452eba03317dea9c1 *man/dlmap-internal.Rd
-b363ccfa12d4da6c6f112c8393c60f92 *man/dlmap-package.Rd
-8e38965ae268ec1196b90698176d4a86 *man/dlmap.Rd
+7bc07a4a325ee31db71debd6bac6dca6 *man/dlcross.Rd
+f026522ba62fd286de29f555435800e8 *man/dlmap-internal.Rd
+899a5e8f275e21744820252816045b77 *man/dlmap-package.Rd
+a507097b4647058dc24d21c365ce691b *man/dlmap.Rd

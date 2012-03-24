@@ -96,6 +96,8 @@ function(input, algorithm, s.chr, chrSet, prevLoc=NULL, ...)
 
 	formula$fixed <- as.formula(formula$fixed)
 
+	formula$control <- envModel$control
+	formula$eqorder <- 3
 	formula$data <- "dfMerged3"
    	formula$Cfixed <- TRUE
   	formula <- c(formula, ...)

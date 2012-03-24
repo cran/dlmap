@@ -44,7 +44,14 @@ algorithm. See \code{\link[qtl]{fill.geno}} for more details. Note that
 individuals with no phenotypic response data are omitted in the merged 
 dataset. Individuals with phenotypic but no genotypic data are retained, but
 the genotypes are not imputed. 
+
+calc.genoprob2 is a modification of a function from the R/qtl package to allow
+for calculation of genotype probabilities at more general positions than a fixed
+step size. 
 }
-\references{Huang, B.E. and George, A.W. 2009. Look before you leap: A New Approach to QTL Mapping. TAG 119:899-911}
+\references{Huang, B.E. and George, A.W. 2009. Look before you leap: A New Approach to QTL Mapping. TAG 119:899-911
+
+Broman et al. (2003) R/qtl: QTL mapping in experimental crosses. Bioinformatics 19:889-890 
+}
 \author{ Emma Huang and Andrew George}
 \keyword{internal}

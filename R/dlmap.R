@@ -56,25 +56,44 @@ function(object, phename, baseModel, algorithm=c("asreml", "lme"), fixed=NULL, r
     if (!require(asreml))
 	stop("ASReml must be installed to use this function. Please use dlmap.lme if you do not have a license")
 
-  if (!missing(pedigree))
-  if (colnames(pedigree)[1]!=idname)
-	stop("Error: The identifier for the pedigree does not match the unique identifier in the genotype file")
+#  if (!missing(pedigree))
+#  if (colnames(pedigree)[1]!=idname)
+#	stop("Error: The identifier for the pedigree does not match the unique identifier in the genotype file")
 
-  Ainv <- NULL
+#  Ainv <- NULL
+#  if (!missing(pedigree))
+#  {
+#	ped.Ainv <- asreml.Ainverse(pedigree)$ginv
+#	
+#	Ainv <- list()
+## } 
+
+  Ainv  <- NULL
   if (!missing(pedigree))
   {
+	if (ncol(pedigree) <= 4)
 	ped.Ainv <- asreml.Ainverse(pedigree)$ginv
-	
+	else if (ncol(pedigree)==nrow(object$dfMrk)) {
+	ped.Ainv <- Ginv(pedigree)$Ginv
+	rownames(ped.Ainv) <- colnames(ped.Ainv) <- rownames(object$dfMrk)
+	}
+	if (!is.null(baseModel$call$random)) random <- baseModel$call$random
+	if (!is.null(random))
+	random <- as.formula(paste("~", as.character(random)[2], "+ped(", idname, ")", sep=""))
+	else random <- as.formula(paste("~ped(", idname, ")", sep=""))
 	Ainv <- list()
 	Ainv[[idname]] <- ped.Ainv
-  } 
+  }
 
   object$nperm <- n.perm
 
   if (missing(baseModel))
   object$envModel <- list(fixed=fixed.forma, random=random, sparse=sparse, rcov=rcov, ginverse=Ainv)
   else object$envModel <- as.list(baseModel$call)[2:length(baseModel$call)]
-
+  if (!missing(pedigree)) {
+  object$envModel$random <- random
+  object$envModel$ginverse <- Ainv
+  }
 
   object$dfMerged[[idname]] <- as.factor(object$dfMerged[[idname]])
 

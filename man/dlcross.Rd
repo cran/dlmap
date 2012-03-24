@@ -75,8 +75,8 @@ The summary function outputs a summary of data stored in dlcross object, includi
 object summary; similar output for association mapping populations. 
 
 } 
-\value{ Object with class "dlcross" which can be input to dlmap.asreml or 
-dlmap.lme. Contains the following elements:
+\value{ Object with class "dlcross" which can be input to dlmap. 
+Contains the following elements:
 \item{dfMerged}{Data frame to be used in dlMapping analysis}
 \item{map}{Original genetic map}
 \item{nphe}{Number of phenotypic traits}

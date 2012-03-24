@@ -64,7 +64,7 @@ function(cross, pos, error.prob = 1e-04, map.function = c("haldane", "kosambi", 
 
         rf <- mf(diff(pos[[i]]))
         if (type == "risib" || type == "riself") 
-           rf <- adjust.rf.ri(rf, substr(type, 3, nchar(type)), chrtype)
+           rf <- qtl:::adjust.rf.ri(rf, substr(type, 3, nchar(type)), chrtype)
         rf[rf < 1e-14] <- 1e-14
         newgen <- matrix(ncol = length(pos[[i]]), nrow = nrow(gen))
         dimnames(newgen) <- list(NULL, names(pos[[i]]))

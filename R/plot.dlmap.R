@@ -1,5 +1,5 @@
 `plot.dlmap` <- 
-function(x, chr, max.dist, qcol="light blue", mcol="red", pcol="purple", ...)
+function(x, chr, max.dist, qcol="light blue", mcol="red", pcol="purple", marker.names=FALSE, ...)
 {
     require(wgaim)
 
@@ -46,7 +46,7 @@ function(x, chr, max.dist, qcol="light blue", mcol="red", pcol="purple", ...)
 
     qtlm <- cbind(qtlm, as.numeric(factor(trait, levels = unique(trait))))
     if (!missing(chr)) {
-        if (any(is.na(wh <- pmatch(wchr, chr, dup = TRUE)))) {
+        if (any(is.na(wh <- pmatch(wchr, chr, duplicates.ok = TRUE)))) {
             warning("Some QTL exist outside chromosome(s) subset, Omitting QTL....")
             qtlm <- qtlm[!is.na(wh), ]
             wchr <- wchr[!is.na(wh)]
@@ -73,7 +73,7 @@ function(x, chr, max.dist, qcol="light blue", mcol="red", pcol="purple", ...)
     nodup <- !duplicated(do.call("paste", qtld))
     qtls <- qtld[nodup, ]
     whd <- pmatch(do.call("paste", qtld), do.call("paste", qtls), 
-        dup = TRUE)
+        duplicates.ok = TRUE)
     dlis <- split(qtlm[, 5], whd)
     qtlm <- as.matrix(qtls)
     wchr <- wchr[nodup]
@@ -81,13 +81,13 @@ function(x, chr, max.dist, qcol="light blue", mcol="red", pcol="purple", ...)
         if (as.logical(length(ind <- grep(names(map)[i], 
             wchr)))) {
             for (j in ind) {
-#                if (marker.names) {
+                if (marker.names) {
                   wh <- mt[[i]][pmatch(c(as.character(qtlm[j, 
                     1]), as.character(qtlm[j, 3])), names(map[[i]]))]
                   alis <- list(x = chrpos[i] + 0.5, y = wh, labels = names(wh), 
-                    adj = c(0, 0.5), col = mcol)
+                    adj = c(0, 0.5), col = mcol, cex=.6)
                   do.call("text", c(alis, dots))
-#                }
+                }
                 yv <- c(as.numeric(qtlm[j, 2]), as.numeric(qtlm[j,4])) 
                 yv2 <- c(qtlpos[j]-1, qtlpos[j]+1)
                 yv <- c(yv, rev(yv))

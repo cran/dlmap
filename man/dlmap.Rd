@@ -14,7 +14,7 @@ random = NULL, rcov = NULL, sparse = NULL, pedigree,
 seed = 1, maxit=60, n.perm = 0, multtest=c("holm", "bon"), 
 alpha = 0.05, filestem = "dl", ...)
 
-\method{plot}{dlmap}(x, chr, max.dist, qcol="light blue", mcol="red", pcol="purple", \dots)
+\method{plot}{dlmap}(x, chr, max.dist, qcol="light blue", mcol="red", pcol="purple", marker.names=FALSE, \dots)
 
 profileplot(object, \dots)
 \method{profileplot}{dlmap}(object, chr, marker.names=TRUE, QTLpos=TRUE, pch=20, \dots)
@@ -39,9 +39,9 @@ a ~ operator. See asreml documentation for more detail. }
   \item{baseModel}{ An alternative to specifying \code{fixed}, \code{random}, 
 \code{sparse}, and \code{rcov} separately. If a base model has already been 
 fit in asreml-R for the phenotypic variation, this can be input directly}
-  \item{pedigree}{ A pedigree object consisting of three columns. The first 
+  \item{pedigree}{ Either a pedigree object consisting of three columns or a kinship matrix with number of rows and columns equivalent to the number of unique genotypes. For the pedigree, the first 
 column is the individual ID, then the mother's ID and the father's ID. 
-The name of the ID variable in the first column must match the \code{idname} variable }
+The name of the ID variable in the first column must match the \code{idname} variable. Rownames and colnames for the kinship matrix must match the \code{idname} variable.  }
   \item{seed}{ Random number seed. Default=1}
   \item{n.perm}{ Number of permutations used to get adjusted p-values at 
 each iteration of detection. If \code{n.perm=0} (default) the Holm 
@@ -59,7 +59,7 @@ process. Default="dl"}
  \item{qcol}{colour of intervals surrounding QTL (see \code{par} for colour options)}
  \item{mcol}{colour of QTL flanking markers (see \code{par} for colour options)}
  \item{pcol}{colour of QTL positions (see \code{par} for colour options)}
-  \item{marker.names}{logical value. if \code{TRUE} then marker names are plotted along the top of the profileplot. Defaults to \code{TRUE}}
+  \item{marker.names}{logical value. For profileplot, if \code{TRUE} then marker names are plotted along the top of the profileplot. Defaults to \code{TRUE}. For plot function, if \code{TRUE} then flanking marker names are highlighted. Defaults to \code{FALSE}}
  \item{QTLpos}{logical value. if \code{TRUE} then QTL positions are indicated with vertical lines in profileplot. Defaults to \code{TRUE}}
  \item{pch}{Character to be used for points in plotting; default is solid circle}
 }

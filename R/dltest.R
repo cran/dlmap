@@ -87,6 +87,8 @@ function(input, algorithm, chrSet, prevLoc=NULL, ...)
 
   formula$dump.model <- TRUE
   formula$data <- "dfMerged2"
+  formula$control <- envModel$control
+  formula$eqorder <- 3
   formula <- c(formula, ...)
   formula <- formula[!duplicated(formula)]
   formula <- formula[!sapply(formula, is.null)]
@@ -99,6 +101,7 @@ function(input, algorithm, chrSet, prevLoc=NULL, ...)
      form.null$random <- envModel$random
      form.null <- form.null[!sapply(form.null, is.null)]
      null.forma[[1]] <- do.call("asreml", form.null)
+     null.forma[[1]]$control$eqorder <- 3
   }
  
   if (n.chrSet>1)
@@ -114,6 +117,7 @@ function(input, algorithm, chrSet, prevLoc=NULL, ...)
   	form.null <- formula	
 	form.null$random <- rndf
 	null.forma[[cc]] <- do.call("asreml", form.null)
+	null.forma[[cc]]$control$eqorder <- 3
   }
 
   # Vector of observed test statistics from LRTs

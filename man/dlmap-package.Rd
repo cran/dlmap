@@ -17,8 +17,8 @@ including spatial effects in field trials and random pedigree effects.
 \tabular{ll}{
 Package: \tab dlmap\cr
 Type: \tab Package\cr
-Version: \tab 1.10\cr
-Date: \tab 2012-01-24\cr
+Version: \tab 1.12\cr
+Date: \tab 2012-03-24\cr
 License: \tab GPL 2\cr
 }
 
