@@ -17,8 +17,8 @@ including spatial effects in field trials and random pedigree effects.
 \tabular{ll}{
 Package: \tab dlmap\cr
 Type: \tab Package\cr
-Version: \tab 1.12\cr
-Date: \tab 2012-03-24\cr
+Version: \tab 1.13\cr
+Date: \tab 2012-08-09\cr
 License: \tab GPL 2\cr
 }
 
@@ -46,6 +46,8 @@ Emma Huang and Andrew George \cr
 Maintainer: Emma Huang <Emma.Huang@csiro.au>
 }
 \references{Huang, B.E. and George, A.W. 2009. Look before you leap: A new approach to QTL mapping. TAG 119:899-911
+
+B. Emma Huang, Rohan Shah, Andrew W. George (2012). dlmap: An R Package for Mixed Model QTL and Association Analysis. Journal of Statistical Software 50(6): 1-22. URL http://www.jstatsoft.org/v50/i06/.
 }
 \seealso{
 \code{\link[ibdreg]{ibdreg}}, \code{\link[nlme]{lme}}

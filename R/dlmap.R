@@ -75,7 +75,7 @@ function(object, phename, baseModel, algorithm=c("asreml", "lme"), fixed=NULL, r
 	ped.Ainv <- asreml.Ainverse(pedigree)$ginv
 	else if (ncol(pedigree)==nrow(object$dfMrk)) {
 	ped.Ainv <- Ginv(pedigree)$Ginv
-	rownames(ped.Ainv) <- colnames(ped.Ainv) <- rownames(object$dfMrk)
+	rownames(ped.Ainv) <- colnames(ped.Ainv) <- object$dfMrk[[idname]]
 	}
 	if (!is.null(baseModel$call$random)) random <- baseModel$call$random
 	if (!is.null(random))

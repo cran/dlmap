@@ -1,16 +1,21 @@
-citHeader("To cite R/dlmap in publications use:")
+citHeader("To cite dlmap in publications use:")
 
-citEntry(entry="article",
-         title = "Look before you leap: a new approach to mapping QTL",
-         author = personList(as.person("B. Emma Huang"),
-                             as.person("Andrew W. George")),
-         journal = "Theoretical and Applied Genetics",			     
-         year = 2009,
-	 volume = 119,
-	 pages = "899-911",
-         
-         textVersion = 
-         paste("Huang and George (2009) Look before you leap: a new",
-               "approach to mapping QTL. TAG 119-899.911.")
-         )
+citEntry(entry = "Article",
+  title        = "{dlmap}: An {R} Package for Mixed Model QTL and Association Analysis",
+  author       = personList(as.person("B. Emma Huang"),
+                   as.person("Rohan Shah"),
+                   as.person("Andrew W. George")),
+  journal      = "Journal of Statistical Software",
+  year         = "2012",
+  volume       = "50",
+  number       = "6",
+  pages        = "1--22",
+  url          = "http://www.jstatsoft.org/v50/i06/",
+
+  textVersion  =
+  paste("B. Emma Huang, Rohan Shah, Andrew W. George (2012).",
+        "dlmap: An R Package for Mixed Model QTL and Association Analysis.",
+        "Journal of Statistical Software, 50(6), 1-22.",
+        "URL http://www.jstatsoft.org/v50/i06/.")
+)
 

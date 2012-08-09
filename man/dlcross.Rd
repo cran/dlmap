@@ -88,7 +88,10 @@ there are replicates, i.e., more phenotypic data than genotypic, this object
 will not contain all of the phenotypic data for the sample}
 }
 \seealso{\code{\link[qtl]{plot.cross}}}
-\references{ Huang, BE and George, AW. 2009. Look before you leap: A new approach to QTL mapping. TAG 119:899-911}
+\references{ Huang, BE and George, AW. 2009. Look before you leap: A new approach to QTL mapping. TAG 119:899-911
+
+B. Emma Huang, Rohan Shah, Andrew W. George (2012). dlmap: An R Package for Mixed Model QTL and Association Analysis. Journal of Statistical Software 50(6): 1-22. URL http://www.jstatsoft.org/v50/i06/.
+}
 \author{ Emma Huang and Andrew George }
 \examples{
 \dontrun{

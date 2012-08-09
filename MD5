@@ -1,4 +1,4 @@
-49775c14909e8fb20c797c4dad5df336 *DESCRIPTION
+6e906324be0f041781ee2a12576eeb8a *DESCRIPTION
 ba351f030f2e3864154bbae978e04b60 *NAMESPACE
 93382c9f1d25cbfa1bf593b922a43c2f *NEWS
 6fccafe3ae777b92eb28084f0e44ffcc *R/calc.genoprob2.R
@@ -10,7 +10,7 @@ e81c16dc65221bc492a317ba2e013fba *R/cintern.R
 9718b5ea3dcc9f0e3d4e8256cab6ac82 *R/dlcross.other.R
 5493705273da4d257e88358163ddff88 *R/dldetect.R
 b2409083f4632baa3583910b80225684 *R/dllocalize.R
-5aa34990955e05ac73cb225cec5803ed *R/dlmap.R
+97a414ed360f745ef8c6a97ed2a78d07 *R/dlmap.R
 21f5b480f4ccadb7fb668e9bd6e917c1 *R/dlmapdet.R
 4f87a28e502afb80a74aa27d3993a8c7 *R/dlmaploc.R
 f1a14999a04c6e1c8caf2ca3ffc59549 *R/dltest.R
@@ -37,11 +37,11 @@ c4117a5f1f0dcad9afe01571b3960f38 *R/waldtest.R
 39f882ed39dc44feddd72d53686fcd6b *R/waldtest.asreml.R
 85663891ba2d358533684e54a3ee89d9 *data/BSdat.rda
 9979e011fb3ce44ab6326d5b37b7037c *data/BSphe.rda
-099d6b35822b37c841a8973dd5bd4489 *inst/CITATION
+52db49adb719e26e9b0f2367f8e7e29e *inst/CITATION
 345ddaa5b2d391257d59ec02e3013a0a *man/BSdat.Rd
 4640e5dd9fed2e91df7134214644e562 *man/BSphe.Rd
-c4fe7aa5d79d20df75f143da95bd2a15 *man/data.access.Rd
-7bc07a4a325ee31db71debd6bac6dca6 *man/dlcross.Rd
-f026522ba62fd286de29f555435800e8 *man/dlmap-internal.Rd
-899a5e8f275e21744820252816045b77 *man/dlmap-package.Rd
-a507097b4647058dc24d21c365ce691b *man/dlmap.Rd
+011b3393ba479416ff321b11c6418eaf *man/data.access.Rd
+697ff4fc737a04ecabf3b212b0a4a7d9 *man/dlcross.Rd
+bc84cd39d6e83ee665e38a78cd0ac6ac *man/dlmap-internal.Rd
+4d75436ff44b0647d5ca0c1419be7b4e *man/dlmap-package.Rd
+56080005aa71e13bafb33335fea8688a *man/dlmap.Rd

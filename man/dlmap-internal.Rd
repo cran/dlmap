@@ -51,7 +51,9 @@ step size.
 }
 \references{Huang, B.E. and George, A.W. 2009. Look before you leap: A New Approach to QTL Mapping. TAG 119:899-911
 
-Broman et al. (2003) R/qtl: QTL mapping in experimental crosses. Bioinformatics 19:889-890 
+Broman et al. (2003) R/qtl: QTL mapping in experimental crosses. Bioinformatics 19:889-890
+
+B. Emma Huang, Rohan Shah, Andrew W. George (2012). dlmap: An R Package for Mixed Model QTL and Association Analysis. Journal of Statistical Software 50(6): 1-22. URL http://www.jstatsoft.org/v50/i06/. 
 }
 \author{ Emma Huang and Andrew George}
 \keyword{internal}
